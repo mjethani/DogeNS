@@ -1,1 +1,1 @@
-# such-dns-wow
+# Such DNS. Wow.
