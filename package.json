@@ -1,0 +1,22 @@
+{
+  "name": "such-dns-wow",
+  "version": "0.1.0",
+  "description": "DNS over Doge",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mjethani/such-dns-wow.git"
+  },
+  "keywords": [
+    "dns"
+  ],
+  "author": "Manish Jethani <code@manishjethani.io>",
+  "bugs": {
+    "url": "https://github.com/mjethani/such-dns-wow/issues"
+  },
+  "homepage": "https://github.com/mjethani/such-dns-wow#readme"
+}
