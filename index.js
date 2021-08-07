@@ -5,6 +5,8 @@
 let { version, homepage } = require('./package.json');
 let { doge } = require('./assets.json');
 
+let { DNS } = require('./dns.js');
+
 function printDoge() {
   console.log(`${Buffer.from(doge, 'base64')}`);
 
@@ -19,6 +21,14 @@ function printDoge() {
 
 async function main() {
   printDoge();
+
+  let dns = new DNS();
+
+  dns.on('error', () => {
+    process.exit(1);
+  });
+
+  await dns.start();
 }
 
 if (require.main === module)
