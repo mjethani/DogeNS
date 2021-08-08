@@ -25,7 +25,7 @@ function getListURL(name) {
 }
 
 function readList(message) {
-  return new Promise((resolve, reject) => {
+  return new Promise(resolve => {
     let content = '';
 
     message.setEncoding('utf8');

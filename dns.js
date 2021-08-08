@@ -63,7 +63,7 @@ exports.DNS = class DNS extends EventEmitter {
     let lookup = new Map();
     let resolvedCount = 0;
 
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
       let server = dgram.createSocket('udp4');
       let client = dgram.createSocket('udp4');
 
@@ -80,39 +80,53 @@ exports.DNS = class DNS extends EventEmitter {
       });
 
       server.on('message', (message, { address, port }) => {
-        let id = message.readUInt16BE();
+        try {
+          let id = message.readUInt16BE();
 
-        info(`received ID ${id} (${message.length} bytes) from ${address}:${port}`);
+          info(`received ID ${id} (${message.length} bytes) from ${address}:${port}`);
 
-        let response = this.#check(message);
-        if (response !== null) {
-          info(`sending ID ${id} (${response.length} bytes) to ${address}:${port}`);
+          let response = this.#check(message);
+          if (response !== null) {
+            info(`sending ID ${id} (${response.length} bytes) to ${address}:${port}`);
 
-          server.send(response, port, address);
+            server.send(response, port, address);
 
-          resolvedCount++;
+            resolvedCount++;
 
-        } else {
-          lookup.set(id, { address, port });
+          } else {
+            lookup.set(id, { address, port });
 
-          client.send(message, resolver.port, resolver.host);
+            client.send(message, resolver.port, resolver.host);
+          }
+
+        } catch (error) {
+          console.error('server message error:', error);
+
+          this.emit('error');
         }
       });
 
       client.on('message', message => {
-        let id = message.readUInt16BE();
+        try {
+          let id = message.readUInt16BE();
 
-        let { address, port } = lookup.get(id) || {};
-        if (typeof address === 'undefined')
-          return;
+          let { address, port } = lookup.get(id) || {};
+          if (typeof address === 'undefined')
+            return;
 
-        lookup.delete(id);
+          lookup.delete(id);
 
-        info(`sending ID ${id} (${message.length} bytes) to ${address}:${port}`);
+          info(`sending ID ${id} (${message.length} bytes) to ${address}:${port}`);
 
-        server.send(message, port, address);
+          server.send(message, port, address);
 
-        resolvedCount++;
+          resolvedCount++;
+
+        } catch (error) {
+          console.error('client message error:', error);
+
+          this.emit('error');
+        }
       });
 
       server.on('listening', () => {
