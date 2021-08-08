@@ -39,9 +39,15 @@ function getConfig() {
     upstream = { address, port: +port };
   }
 
-  let block = config.block;
+  let lists = args.options.get('--block-lists') || config.block.lists;
+  if (typeof lists === 'string')
+    lists = lists.split(',');
 
-  return ({ bind, upstream, block });
+  lists = lists.map(list => list.trim());
+
+  let { hosts, exceptions } = config.block;
+
+  return ({ bind, upstream, block: { lists, hosts, exceptions } });
 }
 
 async function startServer() {
