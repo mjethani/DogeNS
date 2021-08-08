@@ -34,7 +34,7 @@ exports.DNS = class DNS extends EventEmitter {
           type: question.type,
           class: question.class,
           data: question.type === 'A' ? '0.0.0.0' : '::',
-          ttl: 300
+          ttl: 86400
         };
 
         return dnsPacket.encode({
