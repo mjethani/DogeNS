@@ -21,3 +21,13 @@
       ▀▄▄▄▄▄▄▀▀▀▒▒▒▒▒▄▄▀     
          ▀▀▀▀▀▀▀▀▀▀▀▀        
 ```
+
+Under development.
+
+World domination confirmed.
+
+Wow.
+
+---
+
+&copy; 2021 Manish Jethani

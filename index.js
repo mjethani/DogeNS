@@ -26,7 +26,7 @@ async function main() {
   let blocker = new Blocker();
   await blocker.start();
 
-  let dns = new DNS();
+  let dns = new DNS({ blocker });
 
   dns.on('error', () => {
     process.exit(1);
