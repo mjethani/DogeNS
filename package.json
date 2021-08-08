@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/mjethani/such-dns-wow/issues"
   },
-  "homepage": "https://github.com/mjethani/such-dns-wow#readme"
+  "homepage": "https://github.com/mjethani/such-dns-wow#readme",
+  "dependencies": {
+    "fast-hosts-lookup": "github:mjethani/fast-hosts-lookup#250382f62f4fc64e2766552d98c8d7bc92b69217"
+  }
 }

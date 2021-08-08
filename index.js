@@ -5,6 +5,7 @@
 let { version, homepage } = require('./package.json');
 let { doge } = require('./assets.json');
 
+let { Blocker } = require('./blocker.js');
 let { DNS } = require('./dns.js');
 
 function printDoge() {
@@ -21,6 +22,9 @@ function printDoge() {
 
 async function main() {
   printDoge();
+
+  let blocker = new Blocker();
+  await blocker.start();
 
   let dns = new DNS();
 
