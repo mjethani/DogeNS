@@ -2,23 +2,12 @@
 
 'use strict';
 
-let { Resolver } = require('dns');
 let { EventEmitter } = require('events');
 let https = require('https');
 
 let { FastHostsLookup } = require('fast-hosts-lookup');
 
-let { block, upstream } = require('./config.json');
-
 let { info } = require('./log.js');
-
-function upstreamLookup(hostname, options, callback) {
-  let resolver = new Resolver();
-  resolver.setServers([ upstream.host ]);
-  resolver.resolve4(hostname, options, (error, [ address ]) => {
-    callback(error, address, 4);
-  });
-}
 
 function getListURL(name) {
   return `https://blocklistproject.github.io/Lists/alt-version/${name}-nl.txt`;
@@ -40,11 +29,11 @@ function readList(message) {
   });
 }
 
-function downloadList(url) {
+function downloadList(url, lookup) {
   info(`downloading block list ${url}`);
 
   return new Promise((resolve, reject) => {
-    https.get(url, { lookup: upstreamLookup }, message => {
+    https.get(url, { lookup }, message => {
       if (message.statusCode !== 200)
         reject(`Download failed for block list ${url} with HTTP status code ${message.statusCode}.`);
       else
@@ -68,24 +57,46 @@ function* parseList(content) {
 exports.Blocker = class Blocker extends EventEmitter {
   #lookup = new FastHostsLookup();
 
+  #lists;
+  #hosts;
+  #exceptions;
+
+  #resolver;
+
+  constructor({ block: { lists, hosts, exceptions }, resolver }) {
+    super();
+
+    this.#lists = lists;
+    this.#hosts = hosts;
+    this.#exceptions = exceptions;
+
+    this.#resolver = resolver;
+  }
+
   async start() {
     let hostCount = 0;
 
-    for (let url of block.lists.map(getListURL)) {
-      for (let hostname of parseList(await downloadList(url))) {
+    let dnsLookup = (hostname, options, callback) => {
+      this.#resolver.resolve4(hostname, options, (error, [ address ]) => {
+        callback(error, address, 4);
+      });
+    };
+
+    for (let url of this.#lists.map(getListURL)) {
+      for (let hostname of parseList(await downloadList(url, dnsLookup))) {
         this.#lookup.add(hostname);
         hostCount++;
       }
     }
 
-    for (let hostname of block.hosts) {
+    for (let hostname of this.#hosts) {
       this.#lookup.add(hostname);
       hostCount++;
     }
 
     info(`blocking ${hostCount} hosts`);
 
-    for (let hostname of block.exceptions)
+    for (let hostname of this.#exceptions)
       this.#lookup.addException(hostname);
   }
 

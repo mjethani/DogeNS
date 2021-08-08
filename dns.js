@@ -7,11 +7,12 @@ let { EventEmitter } = require('events');
 
 let dnsPacket = require('dns-packet');
 
-let { bind, upstream } = require('./config.json');
-
 let { info } = require('./log.js');
 
 exports.DNS = class DNS extends EventEmitter {
+  #bind;
+  #upstream;
+
   #blocker;
 
   #check = message => {
@@ -46,19 +47,17 @@ exports.DNS = class DNS extends EventEmitter {
     return null;
   }
 
-  constructor({ blocker }) {
+  constructor({ net: { bind, upstream }, blocker }) {
     super();
+
+    this.#bind = bind;
+    this.#upstream = upstream;
 
     this.#blocker = blocker;
   }
 
   async start() {
-    let resolver = {
-      host: upstream.host,
-      port: upstream.port || 53
-    };
-
-    info(`using resolver ${resolver.host}:${resolver.port}`);
+    info(`using resolver ${this.#upstream.host}:${this.#upstream.port}`);
 
     let lookup = new Map();
     let resolvedCount = 0;
@@ -96,7 +95,7 @@ exports.DNS = class DNS extends EventEmitter {
           } else {
             lookup.set(id, { address, port });
 
-            client.send(message, resolver.port, resolver.host);
+            client.send(message, this.#upstream.port, this.#upstream.host);
           }
 
         } catch (error) {
@@ -137,9 +136,9 @@ exports.DNS = class DNS extends EventEmitter {
         resolve();
       });
 
-      let local = /(.*):(\d*)$/.exec(bind);
+      let local = /(.*):(\d*)$/.exec(this.#bind);
       if (local === null)
-        throw new Error(`Invalid bind address ${bind}`);
+        throw new Error(`Invalid bind address ${this.#bind}`);
 
       server.bind(local[2], local[1]);
     });

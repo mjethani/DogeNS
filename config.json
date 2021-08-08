@@ -1,8 +1,6 @@
 {
   "bind": ":53",
-  "upstream": {
-    "host": "1.1.1.1"
-  },
+  "upstream": "1.1.1.1",
   "block": {
     "lists": [
       "ads",
