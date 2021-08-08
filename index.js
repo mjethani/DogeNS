@@ -4,8 +4,8 @@
 
 let { Resolver } = require('dns');
 
-let { version, homepage } = require('./package.json');
 let { doge } = require('./assets.json');
+let { version, homepage } = require('./package.json');
 
 let { parseArgs } = require('./args.js');
 let { Blocker } = require('./blocker.js');
@@ -44,24 +44,31 @@ function getConfig() {
   return ({ bind, upstream, block });
 }
 
-let main = exports.main = async function main() {
-  printDoge();
-
+async function startServer() {
   let { bind, upstream, block: { lists, hosts, exceptions } } = getConfig();
 
   let resolver = new Resolver();
   resolver.setServers([ `${upstream.address}:${upstream.port}` ]);
 
-  let blocker = new Blocker({ block: { lists, hosts, exceptions }, resolver });
+  let blocker = new Blocker({ lists, hosts, exceptions });
+  blocker.resolver = resolver;
   await blocker.start();
 
-  let dns = new DNS({ net: { bind, upstream }, blocker });
+  let dns = new DNS({ bind, upstream });
+
+  dns.blocker = blocker;
 
   dns.on('error', () => {
     process.exit(1);
   });
 
   await dns.start();
+}
+
+let main = exports.main = async function main() {
+  printDoge();
+
+  await startServer();
 };
 
 if (require.main === module)

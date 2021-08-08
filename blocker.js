@@ -61,26 +61,36 @@ exports.Blocker = class Blocker extends EventEmitter {
   #hosts;
   #exceptions;
 
-  #resolver;
+  #resolver = null;
 
-  constructor({ block: { lists, hosts, exceptions }, resolver }) {
+  constructor({ lists, hosts, exceptions }) {
     super();
 
     this.#lists = lists;
     this.#hosts = hosts;
     this.#exceptions = exceptions;
+  }
 
-    this.#resolver = resolver;
+  get resolver() {
+    return this.#resolver;
+  }
+
+  set resolver(value = null) {
+    this.#resolver = value;
   }
 
   async start() {
     let hostCount = 0;
 
-    let dnsLookup = (hostname, options, callback) => {
-      this.#resolver.resolve4(hostname, options, (error, [ address ]) => {
-        callback(error, address, 4);
-      });
-    };
+    let dnsLookup = null;
+
+    if (this.#resolver !== null) {
+      dnsLookup = (hostname, options, callback) => {
+        this.#resolver.resolve4(hostname, options, (error, [ address ]) => {
+          callback(error, address, 4);
+        });
+      };
+    }
 
     for (let url of this.#lists.map(getListURL)) {
       for (let hostname of parseList(await downloadList(url, dnsLookup))) {

@@ -13,9 +13,12 @@ exports.DNS = class DNS extends EventEmitter {
   #bind;
   #upstream;
 
-  #blocker;
+  #blocker = null;
 
   #check = message => {
+    if (this.#blocker === null)
+      return null;
+
     let packet = dnsPacket.decode(message);
     if (packet.type === 'query') {
       let [ question ] = packet.questions;
@@ -47,13 +50,19 @@ exports.DNS = class DNS extends EventEmitter {
     return null;
   }
 
-  constructor({ net: { bind, upstream }, blocker }) {
+  constructor({ bind, upstream }) {
     super();
 
     this.#bind = bind;
     this.#upstream = upstream;
+  }
 
-    this.#blocker = blocker;
+  get blocker() {
+    return this.#blocker;
+  }
+
+  set blocker(value = null) {
+    this.#blocker = value;
   }
 
   async start() {
