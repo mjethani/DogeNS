@@ -25,33 +25,37 @@ function printDoge() {
 
 function getConfig() {
   let config = require('./config.json');
-  let args = parseArgs(process.argv.slice(2));
+  let { options } = parseArgs(process.argv.slice(2));
 
-  let bind = args.options.get('--bind') || config.bind;
+  let bind = options.get('--bind') || config.bind;
   if (typeof bind === 'string') {
     let [ address, port = 53 ] = bind.split(':');
     bind = { address, port: +port };
   }
 
-  let upstream = args.options.get('--upstream') || config.upstream;
+  let upstream = options.get('--upstream') || config.upstream;
   if (typeof upstream === 'string') {
     let [ address, port = 53 ] = upstream.split(':');
     upstream = { address, port: +port };
   }
 
-  let lists = args.options.get('--block-lists') || config.block.lists;
+  let lists = options.get('--block-lists') || config.block.lists;
   if (typeof lists === 'string')
     lists = lists.split(',');
 
   lists = lists.map(list => list.trim());
 
-  let hosts = args.options.get('--block-hosts') || config.block.hosts;
+  let hosts = options.get('--block-hosts') || config.block.hosts;
   if (typeof hosts === 'string')
     hosts = hosts.split(',');
 
   hosts = hosts.map(host => host.trim());
 
-  let { exceptions } = config.block;
+  let exceptions = options.get('--block-exceptions') || config.block.exceptions;
+  if (typeof exceptions === 'string')
+    exceptions = exceptions.split(',');
+
+  exceptions = exceptions.map(exception => exception.trim());
 
   return ({ bind, upstream, block: { lists, hosts, exceptions } });
 }
