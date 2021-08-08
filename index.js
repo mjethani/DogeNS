@@ -20,7 +20,7 @@ function printDoge() {
   console.log();
 }
 
-async function main() {
+let main = exports.main = async function main() {
   printDoge();
 
   let blocker = new Blocker();
@@ -33,7 +33,7 @@ async function main() {
   });
 
   await dns.start();
-}
+};
 
 if (require.main === module)
   main();

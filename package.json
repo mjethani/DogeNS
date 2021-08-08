@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "DNS over Doge",
   "main": "index.js",
+  "bin": "such-dns-wow",
   "scripts": {
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -22,5 +23,9 @@
   "dependencies": {
     "dns-packet": "^5.3.0",
     "fast-hosts-lookup": "github:mjethani/fast-hosts-lookup#250382f62f4fc64e2766552d98c8d7bc92b69217"
+  },
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.14.4"
   }
 }
