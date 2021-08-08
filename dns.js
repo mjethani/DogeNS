@@ -7,7 +7,7 @@ let { EventEmitter } = require('events');
 
 let dnsPacket = require('dns-packet');
 
-let { upstream } = require('./config.json');
+let { bind, upstream } = require('./config.json');
 
 let { info } = require('./log.js');
 
@@ -137,7 +137,11 @@ exports.DNS = class DNS extends EventEmitter {
         resolve();
       });
 
-      server.bind(53);
+      let local = /(.*):(\d*)$/.exec(bind);
+      if (local === null)
+        throw new Error(`Invalid bind address ${bind}`);
+
+      server.bind(local[2], local[1]);
     });
   }
 };
