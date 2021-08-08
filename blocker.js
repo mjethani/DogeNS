@@ -8,7 +8,7 @@ let https = require('https');
 
 let { FastHostsLookup } = require('fast-hosts-lookup');
 
-let { ['block-lists']: blockLists, upstream } = require('./config.json');
+let { block, upstream } = require('./config.json');
 
 let { info } = require('./log.js');
 
@@ -71,11 +71,16 @@ exports.Blocker = class Blocker extends EventEmitter {
   async start() {
     let hostCount = 0;
 
-    for (let url of blockLists.map(getListURL)) {
+    for (let url of block.lists.map(getListURL)) {
       for (let hostname of parseList(await downloadList(url))) {
         this.#lookup.add(hostname);
         hostCount++;
       }
+    }
+
+    for (let hostname of block.hosts) {
+      this.#lookup.add(hostname);
+      hostCount++;
     }
 
     info(`blocking ${hostCount} hosts`);

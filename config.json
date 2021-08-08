@@ -2,8 +2,11 @@
   "upstream": {
     "host": "1.1.1.1"
   },
-  "block-lists": [
-    "ads",
-    "tracking"
-  ]
+  "block": {
+    "lists": [
+      "ads",
+      "tracking"
+    ],
+    "hosts": []
+  }
 }
