@@ -45,7 +45,13 @@ function getConfig() {
 
   lists = lists.map(list => list.trim());
 
-  let { hosts, exceptions } = config.block;
+  let hosts = args.options.get('--block-hosts') || config.block.hosts;
+  if (typeof hosts === 'string')
+    hosts = hosts.split(',');
+
+  hosts = hosts.map(host => host.trim());
+
+  let { exceptions } = config.block;
 
   return ({ bind, upstream, block: { lists, hosts, exceptions } });
 }
