@@ -22,7 +22,7 @@
   "homepage": "https://github.com/mjethani/such-dns-wow#readme",
   "dependencies": {
     "dns-packet": "^5.3.0",
-    "fast-hosts-lookup": "github:mjethani/fast-hosts-lookup#250382f62f4fc64e2766552d98c8d7bc92b69217"
+    "fast-hosts-lookup": "github:mjethani/fast-hosts-lookup#9136bb8c331ee5dba8ac1a0018552cace11e2afa"
   },
   "engines": {
     "node": ">=14.0.0",

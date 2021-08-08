@@ -84,6 +84,9 @@ exports.Blocker = class Blocker extends EventEmitter {
     }
 
     info(`blocking ${hostCount} hosts`);
+
+    for (let hostname of block.exceptions)
+      this.#lookup.addException(hostname);
   }
 
   shouldBlock(hostname) {

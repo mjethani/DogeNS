@@ -7,6 +7,7 @@
       "ads",
       "tracking"
     ],
-    "hosts": []
+    "hosts": [],
+    "exceptions": []
   }
 }
