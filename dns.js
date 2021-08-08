@@ -57,7 +57,7 @@ exports.DNS = class DNS extends EventEmitter {
   }
 
   async start() {
-    info(`using resolver ${this.#upstream.host}:${this.#upstream.port}`);
+    info(`using resolver ${this.#upstream.address}:${this.#upstream.port}`);
 
     let lookup = new Map();
     let resolvedCount = 0;
@@ -95,7 +95,7 @@ exports.DNS = class DNS extends EventEmitter {
           } else {
             lookup.set(id, { address, port });
 
-            client.send(message, this.#upstream.port, this.#upstream.host);
+            client.send(message, this.#upstream.port, this.#upstream.address);
           }
 
         } catch (error) {
@@ -136,11 +136,7 @@ exports.DNS = class DNS extends EventEmitter {
         resolve();
       });
 
-      let local = /(.*):(\d*)$/.exec(this.#bind);
-      if (local === null)
-        throw new Error(`Invalid bind address ${this.#bind}`);
-
-      server.bind(local[2], local[1]);
+      server.bind(this.#bind.port, this.#bind.address);
     });
   }
 };

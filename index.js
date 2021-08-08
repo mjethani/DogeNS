@@ -27,12 +27,16 @@ function getConfig() {
   let config = require('./config.json');
   let args = parseArgs(process.argv.slice(2));
 
-  let bind = config.bind;
+  let bind = args.options.get('--bind') || config.bind;
+  if (typeof bind === 'string') {
+    let [ address, port = 53 ] = bind.split(':');
+    bind = { address, port: +port };
+  }
 
   let upstream = args.options.get('--upstream') || config.upstream;
   if (typeof upstream === 'string') {
-    let [ host, port = 53 ] = upstream.split(':');
-    upstream = { host, port: +port };
+    let [ address, port = 53 ] = upstream.split(':');
+    upstream = { address, port: +port };
   }
 
   let block = config.block;
@@ -46,7 +50,7 @@ let main = exports.main = async function main() {
   let { bind, upstream, block: { lists, hosts, exceptions } } = getConfig();
 
   let resolver = new Resolver();
-  resolver.setServers([ `${upstream.host}:${upstream.port}` ]);
+  resolver.setServers([ `${upstream.address}:${upstream.port}` ]);
 
   let blocker = new Blocker({ block: { lists, hosts, exceptions }, resolver });
   await blocker.start();
