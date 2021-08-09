@@ -35,7 +35,7 @@ function downloadList(url, lookup) {
   return new Promise((resolve, reject) => {
     https.get(url, { lookup }, message => {
       if (message.statusCode !== 200)
-        reject(`Download failed for block list ${url} with HTTP status code ${message.statusCode}.`);
+        reject(new Error(`Download failed for block list ${url} with HTTP status code ${message.statusCode}.`));
       else
         resolve(readList(message));
     })
