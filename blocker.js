@@ -3,44 +3,14 @@
 'use strict';
 
 let { EventEmitter } = require('events');
-let https = require('https');
 
 let { FastHostsLookup } = require('fast-hosts-lookup');
 
+let { download } = require('./download.js');
 let { info } = require('./log.js');
 
 function getListURL(name) {
   return `https://blocklistproject.github.io/Lists/alt-version/${name}-nl.txt`;
-}
-
-function readList(message) {
-  return new Promise(resolve => {
-    let content = '';
-
-    message.setEncoding('utf8');
-
-    message.on('data', chunk => {
-      content += chunk;
-    });
-
-    message.on('end', () => {
-      resolve(content);
-    });
-  });
-}
-
-function downloadList(url, lookup) {
-  info(`downloading block list ${url}`);
-
-  return new Promise((resolve, reject) => {
-    https.get(url, { lookup }, message => {
-      if (message.statusCode !== 200)
-        reject(new Error(`Download failed for block list ${url} with HTTP status code ${message.statusCode}.`));
-      else
-        resolve(readList(message));
-    })
-    .on('error', reject);
-  });
 }
 
 function* parseList(content) {
@@ -93,7 +63,9 @@ exports.Blocker = class Blocker extends EventEmitter {
     }
 
     for (let url of this.#lists.map(getListURL)) {
-      for (let hostname of parseList(await downloadList(url, dnsLookup))) {
+      info(`downloading block list ${url}`);
+
+      for (let hostname of parseList(await download(url, dnsLookup))) {
         this.#lookup.add(hostname);
         hostCount++;
       }
