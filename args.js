@@ -1,5 +1,7 @@
 /* Copyright (c) 2021 Manish Jethani */
 
+'use strict';
+
 exports.parseArgs = function parseArgs(args) {
   let options = new Map();
 
