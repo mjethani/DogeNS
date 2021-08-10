@@ -1,4 +1,4 @@
-# Such DNS. Wow.
+# DogeNS: DNS over Doge
 
 ```
          ▄              ▄    
@@ -22,11 +22,12 @@
          ▀▀▀▀▀▀▀▀▀▀▀▀        
 ```
 
-Under development.
+```
+npm i mjethani/DogeNS -g
+dogens --upstream=1.1.1.1 --block-lists=ads,tracking
+```
 
-World domination confirmed.
-
-Wow.
+Amaze.
 
 ---
 
